@@ -4,7 +4,14 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "@types/bun": "latest",
+    "@types/pg": "^8.23.1",
+    "add": "^2.0.9",
+    "bun": "^1.4.0",
+    "pg": "^8.23.0",
+    "prisma": "^7.9.1"
   },
   "peerDependencies": {
     "typescript": "^5"
