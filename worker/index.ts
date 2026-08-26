@@ -2,6 +2,7 @@ import { createClient } from "redis";
 import fs from "fs";
 import { spawn } from "child_process";
 import { prisma } from "./db";
+import { resolve } from "dns";
 
 const client = createClient();
 client.connect().then(async () => {
@@ -80,8 +81,22 @@ client.connect().then(async () => {
       fs.writeFileSync(filePath, code);
       const response = spawn("node", [filePath]);
       response.stdout.on("data", (chunk) => {
-        console.log(chunk.toString());
+        finalOutput += chunk.toString();
       });
+      await new Promise<void>(resolve => { 
+        response.on("exit", async () => { 
+          await prisma.submissions.update({
+            where: {
+              id: submissionId
+            },
+            data: {
+              status: "success",
+              output: finalOutput
+            }
+          })
+          resolve()
+        })
+      })
     }
     if (language === "py") {
       console.log("running users py code");
@@ -89,8 +104,22 @@ client.connect().then(async () => {
       fs.writeFileSync(filePath, code);
       const response = spawn("python", [filePath]);
       response.stdout.on("data", (chunk) => {
-        console.log(chunk.toString());
+        finalOutput += chunk.toString()
       });
+       await new Promise<void>(resolve => { 
+        response.on("exit", async () => { 
+          await prisma.submissions.update({
+            where: {
+              id: submissionId
+            },
+            data: {
+              status: "success",
+              output: finalOutput
+            }
+          })
+          resolve()
+        })
+      })
     }
   }
 });
