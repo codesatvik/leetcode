@@ -84,16 +84,28 @@ client.connect().then(async () => {
         finalOutput += chunk.toString();
       });
       await new Promise<void>(resolve => { 
-        response.on("exit", async () => { 
-          await prisma.submissions.update({
-            where: {
-              id: submissionId
-            },
-            data: {
-              status: "success",
-              output: finalOutput
+        response.on("exit", async (exitCode) => { 
+          if (exitCode === 0) {
+            await prisma.submissions.update({
+              where: {
+                id: submissionId
+              },
+              data: {
+                status: "success",
+                output: finalOutput
+              }
+            })
+          } else { 
+             await prisma.submissions.update({
+               where: {
+               id: submissionId
+                },
+                data: {
+               status: "failure",
+               }
+             })
             }
-          })
+
           resolve()
         })
       })
@@ -107,16 +119,27 @@ client.connect().then(async () => {
         finalOutput += chunk.toString()
       });
        await new Promise<void>(resolve => { 
-        response.on("exit", async () => { 
-          await prisma.submissions.update({
-            where: {
-              id: submissionId
-            },
-            data: {
-              status: "success",
-              output: finalOutput
+         response.on("exit", async (exitCode) => { 
+           if (exitCode === 0) {
+             await prisma.submissions.update({
+               where: {
+                 id: submissionId
+               },
+               data: {
+                 status: "success",
+                 output: finalOutput
+               }
+             })
+           }else { 
+             await prisma.submissions.update({
+               where: {
+               id: submissionId
+                },
+                data: {
+               status: "failure",
+               }
+             })
             }
-          })
           resolve()
         })
       })
